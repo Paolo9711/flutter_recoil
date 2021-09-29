@@ -4,9 +4,9 @@ import 'package:provider/provider.dart' as provider;
 
 export 'package:provider/provider.dart';
 
-typedef GetStateValue<T> = T Function(StateDescriptor stateDescriptor);
-typedef SelectorEvaluator<T> = T Function(GetStateValue get);
-typedef Action = void Function(GetStateValue get);
+typedef RecoilState<T> = T Function(RecoilOptions recoilOptions);
+typedef SelectorOptions<T> = T Function(RecoilState recoilState);
+typedef SetAtomData = void Function(RecoilState recoilState);
 
 abstract class RecoilWidget extends HookWidget {
   const RecoilWidget({Key? key}) : super(key: key);
@@ -39,30 +39,27 @@ class RecoilProvider<T> extends StatelessWidget {
   }
 }
 
-class StateDescriptor<T> {
-  String name;
-  T? initialValue;
+class RecoilOptions<T> {
+  String key;
+  T? defaultValue;
 
-  StateDescriptor(this.name, {this.initialValue});
+  RecoilOptions({required this.key, this.defaultValue});
 }
 
-class Atom<T> extends StateDescriptor<T> {
-  Atom(
-    name,
-    initialValue,
-  ) : super(
-          name,
-          initialValue: initialValue,
-        );
+class Atom<T> extends RecoilOptions<T> {
+  Atom({
+    key,
+    defaultValue,
+  }) : super(key: key, defaultValue: defaultValue);
 }
 
-class Selector<T> extends StateDescriptor<T> {
-  SelectorEvaluator<T> selectorEvaluator;
+class Selector<T> extends RecoilOptions<T> {
+  SelectorOptions<T> selectorOptions;
 
   Selector(
-    String name,
-    this.selectorEvaluator,
-  ) : super(name);
+    key,
+    this.selectorOptions,
+  ) : super(key: key);
 }
 
 class _EvaluatorResult<T> {
@@ -79,32 +76,32 @@ class StateStore {
 
   factory StateStore.of(BuildContext context) => provider.Provider.of<StateStore>(context);
 
-  dynamic getModelValue(StateDescriptor stateDescriptor) {
-    if (states.containsKey(stateDescriptor.name)) {
-      return states[stateDescriptor.name];
+  dynamic getModelValue(RecoilOptions stateDescriptor) {
+    if (states.containsKey(stateDescriptor.key)) {
+      return states[stateDescriptor.key];
     }
 
-    final modelValue = stateDescriptor.initialValue;
-    states[stateDescriptor.name] = modelValue;
+    final modelValue = stateDescriptor.defaultValue;
+    states[stateDescriptor.key] = modelValue;
 
     return modelValue;
   }
 
   dynamic _evaluateStateValue(
-    StateDescriptor stateDescriptor,
-    GetStateValue getStateValue,
+    RecoilOptions recoilOptions,
+    RecoilState recoilState,
   ) =>
-      stateDescriptor is Selector
-          ? stateDescriptor.selectorEvaluator(getStateValue)
-          : getModelValue(stateDescriptor);
+      recoilOptions is Selector
+          ? recoilOptions.selectorOptions(recoilState)
+          : getModelValue(recoilOptions);
 
-  _EvaluatorResult evaluateResult(StateDescriptor stateDescriptor) {
+  _EvaluatorResult evaluateResult(RecoilOptions stateDescriptor) {
     final dependencies = <String>[];
 
     getStateValue(stateDescriptor) {
       final value = _evaluateStateValue(stateDescriptor, getStateValue);
       if (stateDescriptor is Atom) {
-        dependencies.add(stateDescriptor.name);
+        dependencies.add(stateDescriptor.key);
       }
 
       return value;
@@ -114,7 +111,7 @@ class StateStore {
   }
 }
 
-T useModel<T>(StateDescriptor stateDescriptor) {
+T userRecoilState<T>(RecoilOptions recoilOptions) {
   final stateStore = StateStore.of(useContext());
 
   final enter = useState(<String>[]);
@@ -124,7 +121,7 @@ T useModel<T>(StateDescriptor stateDescriptor) {
 
   final reeval = useMemoized(
     () => () {
-      final result = stateStore.evaluateResult(stateDescriptor);
+      final result = stateStore.evaluateResult(recoilOptions);
       stateValue!.value = result.evaluatorResult;
 
       enter.value =
@@ -152,7 +149,7 @@ T useModel<T>(StateDescriptor stateDescriptor) {
   }, [enter, leave]);
 
   final result = useMemoized(() {
-    final result = stateStore.evaluateResult(stateDescriptor);
+    final result = stateStore.evaluateResult(recoilOptions);
     result.dependencies.map((name) => stateStore.states[name]).forEach((element) {
       element.addListener(reeval);
     });
@@ -165,12 +162,12 @@ T useModel<T>(StateDescriptor stateDescriptor) {
   return stateValue.value;
 }
 
-VoidCallback useAction(Action action) {
+VoidCallback setAtomData(SetAtomData setData) {
   final stateStore = StateStore.of(useContext());
 
-  getEvaluatedResult(StateDescriptor stateDescriptor) {
+  getEvaluatedResult(RecoilOptions stateDescriptor) {
     return stateStore.evaluateResult(stateDescriptor).evaluatorResult;
   }
 
-  return () => action(getEvaluatedResult);
+  return () => setData(getEvaluatedResult);
 }

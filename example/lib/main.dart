@@ -24,8 +24,14 @@ class MyHomePage extends RecoilWidget {
 
   @override
   Widget build(BuildContext context) {
-    var checkBoxValue = useModel(checkBoxSelector);
-    var toggle = useAction(toggleCheckBox);
+    var checkBoxValue = userRecoilState(checkBoxAtom);
+
+    var toggle = setAtomData(
+      (setData) {
+        final checkBoxValue = setData(checkBoxAtom);
+        checkBoxValue.value = !checkBoxValue.value;
+      },
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -61,7 +67,7 @@ class ResultScreen extends RecoilWidget {
 
   @override
   Widget build(BuildContext context) {
-    final checkBoxValue = useModel(checkBoxSelector);
+    final checkBoxValue = userRecoilState(checkBoxAtom);
 
     return Scaffold(
       appBar: AppBar(
