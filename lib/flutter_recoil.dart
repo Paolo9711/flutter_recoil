@@ -2,11 +2,9 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:provider/provider.dart' as provider;
 
-export 'package:provider/provider.dart';
-
 typedef RecoilState<T> = T Function(RecoilOptions recoilOptions);
 typedef SelectorOptions<T> = T Function(RecoilState recoilState);
-typedef SetAtomData = void Function(RecoilState recoilState);
+typedef GetAtomValue = void Function(RecoilState recoilState);
 
 abstract class RecoilWidget extends HookWidget {
   const RecoilWidget({Key? key}) : super(key: key);
@@ -81,7 +79,7 @@ class StateStore {
       return states[stateDescriptor.key];
     }
 
-    final modelValue = stateDescriptor.defaultValue;
+    final modelValue = ValueNotifier(stateDescriptor.defaultValue);
     states[stateDescriptor.key] = modelValue;
 
     return modelValue;
@@ -92,8 +90,8 @@ class StateStore {
     RecoilState recoilState,
   ) =>
       recoilOptions is Selector
-          ? recoilOptions.selectorOptions(recoilState)
-          : getModelValue(recoilOptions);
+          ? ValueNotifier(recoilOptions.selectorOptions(recoilState)).value
+          : ValueNotifier(getModelValue(recoilOptions)).value;
 
   _EvaluatorResult evaluateResult(RecoilOptions stateDescriptor) {
     final dependencies = <String>[];
@@ -162,7 +160,7 @@ T userRecoilState<T>(RecoilOptions recoilOptions) {
   return stateValue.value;
 }
 
-VoidCallback setAtomData(SetAtomData setData) {
+VoidCallback setAtomData(GetAtomValue setData) {
   final stateStore = StateStore.of(useContext());
 
   getEvaluatedResult(RecoilOptions stateDescriptor) {
