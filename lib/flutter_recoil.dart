@@ -2,7 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:provider/provider.dart' as provider;
 
-export 'package:provider/provider.dart';
+export 'package:flutter_hooks/flutter_hooks.dart';
 
 typedef RecoilState<T> = T Function(RecoilOptions<T> recoilOptions);
 typedef SelectorOptions<T> = T Function(RecoilState<T> recoilState);
@@ -43,7 +43,7 @@ class RecoilOptions<T> {
   String key;
   T defaultValue;
 
-  ValueNotifier<T> get defaultValueNotifier => ValueNotifier<T>(defaultValue);
+  ValueNotifier<T?> get defaultValueNotifier => ValueNotifier<T>(defaultValue);
 
   RecoilOptions({required this.key, required this.defaultValue});
 }
@@ -53,16 +53,22 @@ class Atom<T> extends RecoilOptions<T> {
     required String key,
     required T defaultValue,
   }) : super(key: key, defaultValue: defaultValue);
+
+  VoidCallback setData(Function(ValueNotifier<T>) value) {
+    final stateStore = StateStore.of(useContext());
+
+    return () => value(stateStore.evaluateResult(this).evaluatorResult);
+  }
 }
 
 class Selector<T> extends RecoilOptions<T> {
-  SelectorOptions<T> selectorOptions;
+  SelectorOptions<T> getValue;
 
-  Selector(
-    key,
+  Selector({
+    required String key,
+    required this.getValue,
     defaultValue,
-    this.selectorOptions,
-  ) : super(key: key, defaultValue: defaultValue);
+  }) : super(key: key, defaultValue: defaultValue);
 }
 
 class _EvaluatorResult<T> {
@@ -95,7 +101,7 @@ class StateStore<T> {
     RecoilState<T> recoilState,
   ) =>
       recoilOptions is Selector<T>
-          ? recoilOptions.selectorOptions(recoilState)
+          ? recoilOptions.getValue(recoilState)
           : getModelValue(recoilOptions);
 
   _EvaluatorResult<T> evaluateResult(RecoilOptions<T> stateDescriptor) {
@@ -164,14 +170,4 @@ ValueNotifier<T> userRecoilState<T>(RecoilOptions<T> recoilOptions) {
   stateValue = useState<T>(result);
 
   return stateValue;
-}
-
-VoidCallback setAtomData(GetAtomValue setData) {
-  final stateStore = StateStore.of(useContext());
-
-  getEvaluatedResult(RecoilOptions stateDescriptor) {
-    return stateStore.evaluateResult(stateDescriptor).evaluatorResult;
-  }
-
-  return () => setData(getEvaluatedResult);
 }

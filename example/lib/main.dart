@@ -15,6 +15,7 @@ class MyApp extends StatelessWidget {
         return MaterialApp(
           title: 'Flutter Recoil Demo',
           home: child,
+          debugShowCheckedModeBanner: false,
         );
       },
       child: const MyHomePage(),
@@ -29,10 +30,9 @@ class MyHomePage extends RecoilWidget {
   Widget build(BuildContext context) {
     final checkBoxValue = userRecoilState<bool>(checkBoxAtom);
 
-    final toggle = setAtomData(
-      (setData) {
-        var checkBoxValue = setData(checkBoxAtom);
-        checkBoxValue.value = !checkBoxValue.value;
+    final toggle = checkBoxAtom.setData(
+      (currentValue) {
+        currentValue.value = !currentValue.value;
       },
     );
 
@@ -70,7 +70,7 @@ class ResultScreen extends RecoilWidget {
 
   @override
   Widget build(BuildContext context) {
-    final checkBoxValue = userRecoilState<bool>(checkBoxAtom);
+    final checkBoxValue = userRecoilState(checkBoxSelector);
 
     return Scaffold(
       appBar: AppBar(
