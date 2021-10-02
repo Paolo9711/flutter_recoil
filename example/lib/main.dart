@@ -32,7 +32,9 @@ class MyHomePage extends RecoilWidget {
 
     final toggle = checkBoxAtom.setData(
       (currentValue) {
-        currentValue.value = !currentValue.value;
+        if (currentValue.value == null) return;
+
+        currentValue.value = !currentValue.value!;
       },
     );
 
