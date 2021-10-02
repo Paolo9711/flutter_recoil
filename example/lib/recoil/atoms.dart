@@ -1,13 +1,28 @@
+import 'dart:math';
+
+import 'package:example/main.dart';
 import 'package:flutter_recoil/flutter_recoil.dart';
 
-final checkBoxAtom = Atom<bool>(
-  key: 'check_box',
-  defaultValue: false,
+final initialCheckBox = List.generate(
+  10,
+  (index) => CheckBoxModel(index, Random().nextInt(2) == 0),
 );
 
-final checkBoxSelector = Selector<bool>(
+final checkBoxAtom = Atom<List<CheckBoxModel>>(
+    key: 'check_box',
+    defaultValue: initialCheckBox,
+    effects: (setSelf) {
+      // if (setSelf.value != null) setSelf.value = !setSelf.value!;
+    });
+
+final checkBoxSelector = Selector<List<CheckBoxModel>>(
   key: 'check_box_selector',
   getValue: (getValue) {
-    return getValue(checkBoxAtom);
+    final currentCheckBox = getValue(checkBoxAtom);
+
+    return (currentCheckBox as List<CheckBoxModel>)
+        .where((e) => e.value)
+        // .map((e) => e.id.toString())
+        .toList();
   },
 );

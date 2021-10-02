@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_recoil/flutter_recoil.dart';
 
@@ -23,18 +25,25 @@ class MyApp extends StatelessWidget {
   }
 }
 
+class CheckBoxModel {
+  final int id;
+  final bool value;
+
+  CheckBoxModel(this.id, this.value);
+}
+
 class MyHomePage extends RecoilWidget {
   const MyHomePage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final checkBoxValue = userRecoilState<bool>(checkBoxAtom);
+    final checkBoxValues = userRecoilState(checkBoxAtom);
 
     final toggle = checkBoxAtom.setData(
       (currentValue) {
         if (currentValue.value == null) return;
 
-        currentValue.value = !currentValue.value!;
+        // currentValue.value = !currentValue.value!;
       },
     );
 
@@ -43,15 +52,20 @@ class MyHomePage extends RecoilWidget {
         title: const Text('Check box'),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text("Check box"),
-            Checkbox(
-              value: checkBoxValue.value,
-              onChanged: (_) => toggle(),
-            ),
-          ],
+        child: ListView.separated(
+          separatorBuilder: (context, index) => const Divider(
+            color: Colors.grey,
+            height: 0,
+          ),
+          itemCount: initialCheckBox.length,
+          itemBuilder: (context, index) {
+            final checkBox = checkBoxValues[index];
+            return ListTile(
+              title: Text(checkBox.id.toString()),
+              trailing: Checkbox(value: checkBox.value, onChanged: (_) {}),
+              onTap: () {},
+            );
+          },
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -72,14 +86,17 @@ class ResultScreen extends RecoilWidget {
 
   @override
   Widget build(BuildContext context) {
-    final checkBoxValue = userRecoilState(checkBoxSelector);
+    final checkBoxValue = userRecoilState(checkBoxSelector).toString();
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Check box result'),
       ),
       body: Center(
-        child: Text(checkBoxValue.value.toString()),
+        child: Text(
+          "The selected check box are: \n $checkBoxValue",
+          textAlign: TextAlign.center,
+        ),
       ),
     );
   }
