@@ -38,7 +38,6 @@ class MyHomePage extends RecoilWidget {
   @override
   Widget build(BuildContext context) {
     final checkBoxValues = userRecoilState(checkBoxAtom);
-
     final toggle = checkBoxAtom.setData(
       (currentValue) {
         if (currentValue.value == null) return;

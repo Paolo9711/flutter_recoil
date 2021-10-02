@@ -15,14 +15,14 @@ final checkBoxAtom = Atom<List<CheckBoxModel>>(
       // if (setSelf.value != null) setSelf.value = !setSelf.value!;
     });
 
-final checkBoxSelector = Selector<List<CheckBoxModel>>(
+final checkBoxSelector = Selector<List<String>>(
   key: 'check_box_selector',
   getValue: (getValue) {
-    final currentCheckBox = getValue(checkBoxAtom);
+    final currentCheckBox = getValue(checkBoxAtom).value;
 
     return (currentCheckBox as List<CheckBoxModel>)
         .where((e) => e.value)
-        // .map((e) => e.id.toString())
+        .map((e) => e.id.toString())
         .toList();
   },
 );

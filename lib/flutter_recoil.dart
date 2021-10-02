@@ -4,7 +4,7 @@ import 'package:provider/provider.dart' as provider;
 
 export 'package:flutter_hooks/flutter_hooks.dart';
 
-typedef RecoilState<T> = T Function(AtomOptions<T> recoilOptions);
+typedef RecoilState<T> = T Function(AtomOptions<T> atomOptions);
 typedef GetRecoilValue<T> = T Function(RecoilState<T> recoilState);
 typedef AtomState<T> = Function(ValueNotifier<T?> atomValue);
 
@@ -61,14 +61,14 @@ class Atom<T> extends AtomOptions<T> {
   }) : super(key: key, defaultValue: defaultValue);
 
   VoidCallback setData(AtomState<T> buildValue) {
-    final stateStore = StateStore();
+    final stateStore = StateStore.of(useContext());
 
     return () => buildValue(stateStore.evaluateResult(this).evaluatorResult);
   }
 }
 
 class Selector<T> extends AtomOptions<T> {
-  GetRecoilValue<T> getValue;
+  GetRecoilValue getValue;
 
   Selector({
     required String key,
@@ -86,7 +86,11 @@ class _EvaluatorResult<T> {
 class StateStore<T> {
   Map<String, dynamic> states = {};
 
-  T getModelValue(AtomOptions<T> atomOptions) {
+  StateStore();
+
+  factory StateStore.of(BuildContext context) => provider.Provider.of<StateStore<T>>(context);
+
+  T getModelValue(AtomOptions atomOptions) {
     if (states.containsKey(atomOptions.key)) {
       return states[atomOptions.key];
     }
@@ -94,7 +98,7 @@ class StateStore<T> {
     final modelValue = atomOptions.defaultValueNotifier;
     states[atomOptions.key] = modelValue;
 
-    return modelValue.value!;
+    return modelValue.value;
   }
 
   _EvaluatorResult<T> evaluateResult(AtomOptions<T> atomOptions) {
@@ -112,19 +116,19 @@ class StateStore<T> {
   }
 }
 
-// void manageAtomEffects<T>(AtomOptions<T> recoilOptions) {
-//   final atom = recoilOptions as Atom<T>;
-//   if (atom.effects == null) return;
+void manageAtomEffects<T>(AtomOptions<T> atomOptions) {
+  final atom = atomOptions as Atom<T>;
+  if (atom.effects == null) return;
 
-//   final stateStore = StateStore.of(useContext());
+  final stateStore = StateStore.of(useContext());
 
-//   atom.effects!(
-//     stateStore.evaluateResult(atom).evaluatorResult,
-//   );
-// }
+  atom.effects!(
+    stateStore.evaluateResult(atom).evaluatorResult,
+  );
+}
 
-T userRecoilState<T>(AtomOptions<T> recoilOptions) {
-  final stateStore = StateStore<T>();
+T userRecoilState<T>(AtomOptions<T> atomOptions) {
+  final stateStore = StateStore.of(useContext());
 
   final enter = useState(<String>[]);
   final leave = useState(<String>[]);
@@ -133,7 +137,7 @@ T userRecoilState<T>(AtomOptions<T> recoilOptions) {
 
   final reeval = useMemoized(
     () => () {
-      final result = stateStore.evaluateResult(recoilOptions);
+      final result = stateStore.evaluateResult(atomOptions);
       stateValue.value = result.evaluatorResult;
 
       enter.value =
@@ -162,7 +166,7 @@ T userRecoilState<T>(AtomOptions<T> recoilOptions) {
   }, [enter, leave]);
 
   final result = useMemoized<T>(() {
-    final result = stateStore.evaluateResult(recoilOptions);
+    final result = stateStore.evaluateResult(atomOptions);
 
     result.dependencies.map((name) => stateStore.states[name]).forEach((element) {
       element.addListener(reeval);
@@ -173,7 +177,7 @@ T userRecoilState<T>(AtomOptions<T> recoilOptions) {
 
   stateValue = useState<T>(result);
 
-  // if (recoilOptions is Atom<T>) manageAtomEffects<T>(recoilOptions);
+  if (atomOptions is Atom<T>) manageAtomEffects<T>(atomOptions);
 
   return stateValue.value;
 }
