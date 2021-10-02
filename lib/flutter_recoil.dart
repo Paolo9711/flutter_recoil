@@ -4,7 +4,7 @@ import 'package:provider/provider.dart' as provider;
 
 export 'package:flutter_hooks/flutter_hooks.dart';
 
-typedef RecoilState<T> = T Function(RecoilOptions<T> recoilOptions);
+typedef RecoilState<T> = T Function(AtomOptions<T> recoilOptions);
 typedef SelectorOptions<T> = T Function(RecoilState<T> recoilState);
 typedef GetAtomValue<T> = void Function(RecoilState<T> recoilState);
 
@@ -39,16 +39,16 @@ class RecoilProvider<T> extends StatelessWidget {
   }
 }
 
-class RecoilOptions<T> {
+class AtomOptions<T> {
   String key;
   T? defaultValue;
 
   ValueNotifier<T?> get defaultValueNotifier => ValueNotifier<T?>(defaultValue);
 
-  RecoilOptions({required this.key, this.defaultValue});
+  AtomOptions({required this.key, this.defaultValue});
 }
 
-class Atom<T> extends RecoilOptions<T> {
+class Atom<T> extends AtomOptions<T> {
   Atom({
     required String key,
     required T defaultValue,
@@ -61,7 +61,7 @@ class Atom<T> extends RecoilOptions<T> {
   }
 }
 
-class Selector<T> extends RecoilOptions<T> {
+class Selector<T> extends AtomOptions<T> {
   SelectorOptions getValue;
 
   Selector({
@@ -84,7 +84,7 @@ class StateStore<T> {
 
   factory StateStore.of(BuildContext context) => provider.Provider.of<StateStore<T>>(context);
 
-  getModelValue(RecoilOptions stateDescriptor) {
+  getModelValue(AtomOptions stateDescriptor) {
     if (states.containsKey(stateDescriptor.key)) {
       return states[stateDescriptor.key];
     }
@@ -95,7 +95,7 @@ class StateStore<T> {
     return modelValue;
   }
 
-  _EvaluatorResult<T> evaluateResult(RecoilOptions<T> recoilOptions) {
+  _EvaluatorResult<T> evaluateResult(AtomOptions<T> recoilOptions) {
     final dependencies = <String>[];
 
     if (recoilOptions is Selector<T>) {
@@ -110,7 +110,7 @@ class StateStore<T> {
   }
 }
 
-ValueNotifier<T> userRecoilState<T>(RecoilOptions<T> recoilOptions) {
+ValueNotifier<T> userRecoilState<T>(AtomOptions<T> recoilOptions) {
   final stateStore = StateStore.of(useContext());
 
   final enter = useState(<String>[]);
