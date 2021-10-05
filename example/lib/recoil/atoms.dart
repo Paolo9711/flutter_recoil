@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:example/main.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_recoil/flutter_recoil.dart';
 
 final initialCheckBox = List.generate(
@@ -9,20 +10,20 @@ final initialCheckBox = List.generate(
 );
 
 final checkBoxAtom = Atom<List<CheckBoxModel>>(
-    key: 'check_box',
-    defaultValue: initialCheckBox,
-    effects: (setSelf) {
-      // if (setSelf.value != null) setSelf.value = !setSelf.value!;
-    });
+  key: 'check_box',
+  defaultValue: initialCheckBox,
+);
 
 final checkBoxSelector = Selector<List<String>>(
   key: 'check_box_selector',
   getValue: (getValue) {
-    final currentCheckBox = getValue(checkBoxAtom).value;
+    final currentCheckBox = getValue(checkBoxAtom);
 
-    return (currentCheckBox as List<CheckBoxModel>)
-        .where((e) => e.value)
-        .map((e) => e.id.toString())
-        .toList();
+    return ValueNotifier<List<String>>(
+      (currentCheckBox.value as List<CheckBoxModel>)
+          .where((e) => e.value)
+          .map((e) => e.id.toString())
+          .toList(),
+    );
   },
 );

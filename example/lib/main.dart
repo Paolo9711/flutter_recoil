@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_recoil/flutter_recoil.dart';
 
@@ -38,11 +36,11 @@ class MyHomePage extends RecoilWidget {
   @override
   Widget build(BuildContext context) {
     final checkBoxValues = userRecoilState(checkBoxAtom);
+    final newCheckBoxValues = useState(checkBoxValues.value);
+
     final toggle = checkBoxAtom.setData(
       (currentValue) {
-        if (currentValue.value == null) return;
-
-        // currentValue.value = !currentValue.value!;
+        if (currentValue.value != null) currentValue.value = newCheckBoxValues.value;
       },
     );
 
@@ -58,11 +56,17 @@ class MyHomePage extends RecoilWidget {
           ),
           itemCount: initialCheckBox.length,
           itemBuilder: (context, index) {
-            final checkBox = checkBoxValues[index];
+            final checkBox = checkBoxValues.value[index];
             return ListTile(
               title: Text(checkBox.id.toString()),
               trailing: Checkbox(value: checkBox.value, onChanged: (_) {}),
-              onTap: () {},
+              onTap: () {
+                newCheckBoxValues.value = checkBoxValues.value
+                    .map((e) => e.id == checkBox.id ? CheckBoxModel(e.id, !e.value) : e)
+                    .toList();
+
+                toggle();
+              },
             );
           },
         ),
@@ -85,7 +89,7 @@ class ResultScreen extends RecoilWidget {
 
   @override
   Widget build(BuildContext context) {
-    final checkBoxValue = userRecoilState(checkBoxSelector).toString();
+    final checkBoxValue = userRecoilState(checkBoxSelector);
 
     return Scaffold(
       appBar: AppBar(
@@ -93,7 +97,7 @@ class ResultScreen extends RecoilWidget {
       ),
       body: Center(
         child: Text(
-          "The selected check box are: \n $checkBoxValue",
+          "The selected check box are: \n ${checkBoxValue.value}",
           textAlign: TextAlign.center,
         ),
       ),
