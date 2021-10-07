@@ -2,8 +2,6 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:provider/provider.dart' as provider;
 
-export 'package:flutter_hooks/flutter_hooks.dart';
-
 typedef RecoilState<T> = T Function(AtomOptions<T> atomOptions);
 typedef GetRecoilValue<T> = T Function(RecoilState<T?> recoilState);
 typedef GetAtomValue<T> = Function(ValueNotifier<T?> atomValue);

@@ -36,11 +36,10 @@ class MyHomePage extends RecoilWidget {
   @override
   Widget build(BuildContext context) {
     final checkBoxValues = userRecoilState(checkBoxAtom);
-    final newCheckBoxValues = useState(checkBoxValues.value);
 
     final toggle = checkBoxAtom.setData(
       (currentValue) {
-        if (currentValue.value != null) currentValue.value = newCheckBoxValues.value;
+        if (currentValue.value != null) currentValue.value = checkBoxValues.value;
       },
     );
 
@@ -61,7 +60,7 @@ class MyHomePage extends RecoilWidget {
               title: Text(checkBox.id.toString()),
               trailing: Checkbox(value: checkBox.value, onChanged: (_) {}),
               onTap: () {
-                newCheckBoxValues.value = checkBoxValues.value
+                checkBoxValues.value = checkBoxValues.value
                     .map((e) => e.id == checkBox.id ? CheckBoxModel(e.id, !e.value) : e)
                     .toList();
 
