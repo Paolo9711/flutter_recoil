@@ -113,54 +113,30 @@ class StateStore<T> {
 ValueNotifier<T> userRecoilState<T>(AtomOptions<T> atomOptions) {
   final stateStore = StateStore.of(useContext());
 
-  final enter = useState(<String>[]);
-  final leave = useState(<String>[]);
   final dependencies = useState(<String>[]);
   late ValueNotifier<T> stateValue;
 
-  final reeval = useMemoized(
+  final evaluateResult = useMemoized(
     () => () {
       final result = stateStore.evaluateResult(atomOptions);
       stateValue.value = result.evaluatorResult.value;
 
-      enter.value =
-          result.dependencies.where((element) => !dependencies.value.contains(element)).toList();
-      leave.value =
-          dependencies.value.where((element) => !result.dependencies.contains(element)).toList();
-
       dependencies.value = result.dependencies;
     },
+    [dependencies],
   );
-
-  useEffect(() {
-    enter.value.map((name) => stateStore.states[name]).forEach((element) {
-      if (element is Listenable) element.addListener(reeval);
-    });
-
-    leave.value.map((name) => stateStore.states[name]).forEach((element) {
-      if (element is Listenable) element.removeListener(reeval);
-    });
-
-    return () {
-      dependencies.value.map((name) => stateStore.states[name]).forEach((element) {
-        if (element is Listenable) element.removeListener(reeval);
-      });
-    };
-  }, [enter, leave]);
 
   final result = useMemoized<T>(() {
     final result = stateStore.evaluateResult(atomOptions);
 
     result.dependencies.map((name) => stateStore.states[name]).forEach((element) {
-      element.addListener(reeval);
+      element.addListener(evaluateResult);
     });
     dependencies.value = result.dependencies;
     return result.evaluatorResult.value;
-  });
+  }, [dependencies]);
 
   stateValue = useState<T>(result);
-
-  // if (atomOptions is Atom<T>) manageAtomEffects<T>(atomOptions);
 
   return stateValue;
 }
