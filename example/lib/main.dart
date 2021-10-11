@@ -43,6 +43,14 @@ class MyHomePage extends RecoilWidget {
       },
     );
 
+    void onTileTap(int checkBoxID) {
+      checkBoxValues.value = checkBoxValues.value
+          .map((e) => e.id == checkBoxID ? CheckBoxModel(e.id, !e.value) : e)
+          .toList();
+
+      toggle();
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Check box'),
@@ -58,14 +66,11 @@ class MyHomePage extends RecoilWidget {
             final checkBox = checkBoxValues.value[index];
             return ListTile(
               title: Text(checkBox.id.toString()),
-              trailing: Checkbox(value: checkBox.value, onChanged: (_) {}),
-              onTap: () {
-                checkBoxValues.value = checkBoxValues.value
-                    .map((e) => e.id == checkBox.id ? CheckBoxModel(e.id, !e.value) : e)
-                    .toList();
-
-                toggle();
-              },
+              trailing: Checkbox(
+                value: checkBox.value,
+                onChanged: (_) => onTileTap(checkBox.id),
+              ),
+              onTap: () => onTileTap(checkBox.id),
             );
           },
         ),

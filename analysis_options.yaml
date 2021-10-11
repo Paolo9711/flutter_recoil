@@ -1,4 +1,21 @@
 include: package:flutter_lints/flutter.yaml
 
-# Additional information about this file can be found at
-# https://dart.dev/guides/language/analysis-options
+linter:
+  rules:
+    - parameter_assignments
+    - unawaited_futures
+
+analyzer:
+  errors:
+    missing_required_param: error
+    parameter_assignments: error
+    missing_return: error
+    unused_import: error
+    prefer_const_constructors: error
+    await_only_futures: error
+    invalid_use_of_visible_for_testing_member: error
+    unawaited_futures: error
+    invalid_null_aware_operator: error
+    dead_null_aware_expression: error
+    unnecessary_null_comparison: error
+    dead_code: error
