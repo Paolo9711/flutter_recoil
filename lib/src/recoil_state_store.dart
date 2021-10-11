@@ -2,13 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart' as provider;
 import '../flutter_recoil.dart';
 
-class _EvaluatorResult<T> {
-  T evaluatorResult;
-  List<String> dependencies;
-
-  _EvaluatorResult(this.evaluatorResult, this.dependencies);
-}
-
 /// Manage and evaluate values of atoms and selectors
 class RecoilStateStore<T> {
   Map<String, dynamic> states = {};
@@ -42,4 +35,11 @@ class RecoilStateStore<T> {
     dependencies.add(atomOptions.key);
     return _EvaluatorResult<T>(getModelValue(atomOptions), dependencies);
   }
+}
+
+class _EvaluatorResult<T> {
+  T evaluatorResult;
+  List<String> dependencies;
+
+  _EvaluatorResult(this.evaluatorResult, this.dependencies);
 }

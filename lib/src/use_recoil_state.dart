@@ -1,6 +1,23 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_recoil/src/recoil_state_store.dart';
 import '../flutter_recoil.dart';
+
+/// Returns the value of an [Atom] and
+/// subscribes the components to future updates of that state.
+///
+/// See also:
+///  * [Atom]
+///  * [AtomOptions]
+ValueNotifier<T> useRecoilAtomState<T>(AtomOptions<T> atomOptions) => _useRecoilState(atomOptions);
+
+/// Returns the value of [Selector] and
+/// subscribes the components to future updates of that state.
+///
+/// See also:
+///  * [Selector]
+///  * [AtomOptions]
+T useRecoilSelectorState<T>(AtomOptions<T> atomOptions) => _useRecoilState(atomOptions);
 
 _useRecoilState<T>(AtomOptions<T> atomOptions) {
   final stateStore = RecoilStateStore.of(useContext());
@@ -33,19 +50,3 @@ _useRecoilState<T>(AtomOptions<T> atomOptions) {
 
   return atomOptions is Selector ? stateValue.value : stateValue;
 }
-
-/// Returns the value of an [Atom] and
-/// subscribes the components to future updates of that state.
-///
-/// See also:
-///  * [Atom]
-///  * [AtomOptions]
-ValueNotifier<T> useRecoilAtomState<T>(AtomOptions<T> atomOptions) => _useRecoilState(atomOptions);
-
-/// Returns the value of [Selector] and
-/// subscribes the components to future updates of that state.
-///
-/// See also:
-///  * [Selector]
-///  * [AtomOptions]
-T useRecoilSelectorState<T>(AtomOptions<T> atomOptions) => _useRecoilState(atomOptions);
