@@ -34,6 +34,18 @@ _useRecoilState<T>(AtomOptions<T> atomOptions) {
   return atomOptions is Selector ? stateValue.value : stateValue;
 }
 
+/// Returns the value of an [Atom] and
+/// subscribes the components to future updates of that state.
+///
+/// See also:
+///  * [Atom]
+///  * [AtomOptions]
 ValueNotifier<T> useRecoilAtomState<T>(AtomOptions<T> atomOptions) => _useRecoilState(atomOptions);
 
+/// Returns the value of [Selector] and
+/// subscribes the components to future updates of that state.
+///
+/// See also:
+///  * [Selector]
+///  * [AtomOptions]
 T useRecoilSelectorState<T>(AtomOptions<T> atomOptions) => _useRecoilState(atomOptions);

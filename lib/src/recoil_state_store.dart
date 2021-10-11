@@ -9,6 +9,7 @@ class _EvaluatorResult<T> {
   _EvaluatorResult(this.evaluatorResult, this.dependencies);
 }
 
+/// Manage and evaluate values of atoms and selectors
 class RecoilStateStore<T> {
   Map<String, dynamic> states = {};
 

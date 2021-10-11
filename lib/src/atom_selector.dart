@@ -11,6 +11,11 @@ class AtomOptions<T> {
   AtomOptions({required this.key, this.defaultValue});
 }
 
+/// Creates an [Atom], which represents a piece of writeable state
+///
+/// Define a unique `key` in order to identify the relative atom
+///
+/// Use `defaultValue` in order to set the initial value of the Atom
 class Atom<T> extends AtomOptions<T> {
   Atom({
     required String key,
@@ -24,6 +29,9 @@ class Atom<T> extends AtomOptions<T> {
   }
 }
 
+/// Creates a [Selector], which represents a piece of readable state
+///
+/// Use `getValue` in order to get the value of a created atom
 class Selector<T> extends AtomOptions<T> {
   GetRecoilValue getValue;
 
