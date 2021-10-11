@@ -4,6 +4,13 @@ import 'package:flutter_recoil/src/recoil_state_store.dart';
 import 'package:flutter_recoil/src/types.dart';
 
 class Atom<T> extends AtomOptions<T> {
+  /// Add custom actions to [Atom]
+  ///
+  /// `T` value represents `onItemSet` and it's called every time [Atom] value change
+  ///
+  /// `ValueNotifier<T>` represents `setItemData` useful to change value of current [Atom]
+  AtomEffect<T> effects;
+
   /// Creates an [Atom], which represents a piece of writeable state
   ///
   /// Define a unique `key` in order to identify the relative atom
@@ -12,13 +19,22 @@ class Atom<T> extends AtomOptions<T> {
   Atom({
     required String key,
     required T defaultValue,
+    this.effects,
   }) : super(key: key, defaultValue: defaultValue);
 
   /// Change the stored value of the current atom
   VoidCallback setData(GetAtomValue<T> buildValue) {
     final stateStore = RecoilStateStore.of(useContext());
 
-    return () => buildValue(stateStore.evaluateResult(this).evaluatorResult);
+    final currentResult = stateStore.evaluateResult(this).evaluatorResult;
+
+    final setData = buildValue(currentResult);
+
+    if (effects != null) {
+      effects!(currentResult.value, currentResult);
+    }
+
+    return () => setData;
   }
 }
 
