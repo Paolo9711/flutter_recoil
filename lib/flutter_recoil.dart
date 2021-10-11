@@ -108,7 +108,7 @@ class StateStore<T> {
   }
 }
 
-ValueNotifier<T> userRecoilState<T>(AtomOptions<T> atomOptions) {
+_useRecoilState<T>(AtomOptions<T> atomOptions) {
   final stateStore = StateStore.of(useContext());
 
   final dependencies = useState(<String>[]);
@@ -117,7 +117,8 @@ ValueNotifier<T> userRecoilState<T>(AtomOptions<T> atomOptions) {
   final evaluateResult = useMemoized(
     () => () {
       final result = stateStore.evaluateResult(atomOptions);
-      stateValue.value = result.evaluatorResult.value;
+      stateValue.value =
+          atomOptions is Selector ? result.evaluatorResult : result.evaluatorResult.value;
 
       dependencies.value = result.dependencies;
     },
@@ -131,10 +132,14 @@ ValueNotifier<T> userRecoilState<T>(AtomOptions<T> atomOptions) {
       element.addListener(evaluateResult);
     });
     dependencies.value = result.dependencies;
-    return result.evaluatorResult.value;
+    return atomOptions is Selector ? result.evaluatorResult : result.evaluatorResult.value;
   }, [dependencies]);
 
   stateValue = useState<T>(result);
 
-  return stateValue;
+  return atomOptions is Selector ? stateValue.value : stateValue;
 }
+
+ValueNotifier<T> useRecoilAtomState<T>(AtomOptions<T> atomOptions) => _useRecoilState(atomOptions);
+
+T useRecoilSelectorState<T>(AtomOptions<T> atomOptions) => _useRecoilState(atomOptions);

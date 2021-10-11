@@ -35,7 +35,7 @@ class MyHomePage extends RecoilWidget {
 
   @override
   Widget build(BuildContext context) {
-    final checkBoxValues = userRecoilState(checkBoxAtom);
+    final checkBoxValues = useRecoilAtomState(checkBoxAtom);
 
     final toggle = checkBoxAtom.setData(
       (currentValue) {
@@ -88,7 +88,7 @@ class ResultScreen extends RecoilWidget {
 
   @override
   Widget build(BuildContext context) {
-    final checkBoxValue = userRecoilState(checkBoxSelector);
+    final checkBoxValue = useRecoilSelectorState(checkBoxSelector);
 
     return Scaffold(
       appBar: AppBar(
@@ -96,7 +96,7 @@ class ResultScreen extends RecoilWidget {
       ),
       body: Center(
         child: Text(
-          "The selected check box are: \n ${checkBoxValue.value}",
+          "The selected check box are: \n $checkBoxValue",
           textAlign: TextAlign.center,
         ),
       ),
