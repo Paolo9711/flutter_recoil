@@ -7,10 +7,11 @@ For more information about Recoil visit the official web site of [RecoilJS](http
 
 - Implement `Atom` and `Selector` classes
 - Manage Recoil State using `useRecoilSelectorStat` or `useRecoilAtomState`
+- Manage `effects` for Atom
 
 ## Getting started
 
-See `example/lib/main.dart` for full example usage
+See `example/lib/main.dart` for full example usage 
 
 ## Usage
 
@@ -30,3 +31,14 @@ final checkBoxSelector = Selector<List<String>>(
       .toList(),
 );
 ```
+
+In order to use effects of `Atom`, `setItemData` and `onItemSet` are provided.
+
+```dart
+Atom(
+  key: 'atom_key',
+  defaultValue: atomDefaultValue,
+  effects: (onItemSet, setItemData) {},
+);
+```
+In particular `onItemSet` it's called every time `Atom` value change and `setItemData` can be used to change value of the relative `Atom`
