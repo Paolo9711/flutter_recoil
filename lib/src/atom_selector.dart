@@ -25,16 +25,11 @@ class Atom<T> extends AtomOptions<T> {
   /// Change the stored value of the current atom
   VoidCallback setData(GetAtomValue<T> buildValue) {
     final stateStore = RecoilStateStore.of(useContext());
-
     final currentResult = stateStore.evaluateResult(this).evaluatorResult;
 
-    final setData = buildValue(currentResult);
+    if (effects != null) effects!(currentResult.value, currentResult);
 
-    if (effects != null) {
-      effects!(currentResult.value, currentResult);
-    }
-
-    return () => setData;
+    return () => buildValue(currentResult);
   }
 }
 
