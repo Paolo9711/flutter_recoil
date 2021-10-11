@@ -11,29 +11,37 @@ and the Flutter guide for
 [developing packages and plugins](https://flutter.dev/developing-packages). 
 -->
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+A Flutter package that helps implement the Recoil pattern from React.  
+For more information about Recoil visit the official web site of [RecoilJS](https://recoiljs.org).
 
 ## Features
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+- Implement `Atom` and `Selector` classes
+- Manage Recoil State using `useRecoilSelectorStat` or `useRecoilAtomState`
 
 ## Getting started
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+See `example/lib/main.dart` for full example usage
 
 ## Usage
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder. 
+Use `Atom` and `Selector` to manage Recoil states.
 
 ```dart
-const like = 'sample';
+final checkBoxAtom = Atom<List<CheckBoxModel>>(
+  key: 'check_box',
+  defaultValue: initialCheckBox,
+);
+
+final checkBoxSelector = Selector<List<String>>(
+  key: 'check_box_selector',
+  getValue: (getValue) {
+    final currentCheckBox = getValue(checkBoxAtom);
+
+    return (currentCheckBox.value as List<CheckBoxModel>)
+        .where((e) => e.value)
+        .map((e) => e.id.toString())
+        .toList();
+  },
+);
 ```
-
-## Additional information
-
-TODO: Tell users more about the package: where to find more information, how to 
-contribute to the package, how to file issues, what response they can expect 
-from the package authors, and more.
