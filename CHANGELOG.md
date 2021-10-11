@@ -1,3 +1,7 @@
 ## 0.0.1
 
-* TODO: Describe initial release.
+Initial version of the library
+
+* feat: Atoms and Selectors implementation
+* feat: useRecoilState implementation
+
