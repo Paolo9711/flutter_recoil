@@ -1,15 +1,15 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_recoil/src/recoil_state_store.dart';
 import 'package:flutter_recoil/src/types.dart';
 
-class Atom<T> extends AtomOptions<T> {
+class Atom<T> extends RecoilOptions<T> {
   /// Add custom actions to [Atom]
   ///
   /// `T` value represents `onItemSet` and it's called every time [Atom] value change
   ///
   /// `ValueNotifier<T>` represents `setItemData` useful to change value of current [Atom]
   AtomEffect<T> effects;
+
+  T defaultValue;
 
   /// Creates an [Atom], which represents a piece of writeable state
   ///
@@ -18,24 +18,18 @@ class Atom<T> extends AtomOptions<T> {
   /// Use `defaultValue` in order to set the initial value of the Atom
   Atom({
     required String key,
-    required T defaultValue,
+    required this.defaultValue,
     this.effects,
-  }) : super(key: key, defaultValue: defaultValue);
+  }) : super(key: key);
 
-  /// Change the stored value of the current atom
-  VoidCallback setData(GetAtomValue<T> buildValue) {
-    final stateStore = RecoilStateStore.of(useContext());
-    final currentResult = stateStore.evaluateResult(this).evaluatorResult;
-
-    if (effects != null) effects!(currentResult.value, currentResult);
-
-    return () => buildValue(currentResult);
-  }
+  ValueNotifier<T> get defaultValueNotifier => ValueNotifier<T>(defaultValue);
 }
 
-class Selector<T> extends AtomOptions<T> {
-  /// Get the current value of an [Atom]
-  GetRecoilValue getValue;
+class Selector<T> extends RecoilOptions<T> {
+  /// Get the current value of an [Atom].
+  ///
+  /// `getValue` returns a dynamic, so be sure to cast with the return type of the atom you're reading from.
+  GetRecoilValue<T> getValue;
 
   /// Creates a [Selector], which represents a piece of readable state
   ///
@@ -46,11 +40,8 @@ class Selector<T> extends AtomOptions<T> {
   }) : super(key: key);
 }
 
-class AtomOptions<T> {
+class RecoilOptions<T> {
   String key;
-  T? defaultValue;
 
-  ValueNotifier<T?> get defaultValueNotifier => ValueNotifier<T?>(defaultValue);
-
-  AtomOptions({required this.key, this.defaultValue});
+  RecoilOptions({required this.key});
 }

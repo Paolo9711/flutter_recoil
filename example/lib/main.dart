@@ -35,20 +35,16 @@ class MyHomePage extends RecoilWidget {
 
   @override
   Widget build(BuildContext context) {
-    final checkBoxValues = useRecoilAtomState(checkBoxAtom);
-
-    final toggle = checkBoxAtom.setData(
-      (currentValue) {
-        currentValue.value = checkBoxValues.value;
-      },
-    );
+    final checkBox = useRecoilState(checkBoxAtom);
 
     void onTileTap(int checkBoxID) {
-      checkBoxValues.value = checkBoxValues.value
-          .map((e) => e.id == checkBoxID ? CheckBoxModel(e.id, !e.value) : e)
-          .toList();
-
-      toggle();
+      checkBox.setData(
+        checkBox.data
+            .map(
+              (e) => e.id == checkBoxID ? CheckBoxModel(e.id, !e.value) : e,
+            )
+            .toList(),
+      );
     }
 
     return Scaffold(
@@ -63,14 +59,14 @@ class MyHomePage extends RecoilWidget {
           ),
           itemCount: initialCheckBox.length,
           itemBuilder: (context, index) {
-            final checkBox = checkBoxValues.value[index];
+            final currentCheckBox = checkBox.data[index];
             return ListTile(
-              title: Text(checkBox.id.toString()),
+              title: Text(currentCheckBox.id.toString()),
               trailing: Checkbox(
-                value: checkBox.value,
-                onChanged: (_) => onTileTap(checkBox.id),
+                value: currentCheckBox.value,
+                onChanged: (_) => onTileTap(currentCheckBox.id),
               ),
-              onTap: () => onTileTap(checkBox.id),
+              onTap: () => onTileTap(currentCheckBox.id),
             );
           },
         ),

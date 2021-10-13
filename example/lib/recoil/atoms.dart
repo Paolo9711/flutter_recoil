@@ -8,12 +8,21 @@ final initialCheckBox = List.generate(
   (index) => CheckBoxModel(index, Random().nextInt(2) == 0),
 );
 
-final checkBoxAtom = Atom<List<CheckBoxModel>>(
+final checkBoxAtom = Atom(
   key: 'check_box',
   defaultValue: initialCheckBox,
+  effects: (onItemSet, setItemData) {
+    // onItemSet.forEach((e) {
+    //   print("${e.id} ${e.value}");
+    // });
+
+    // Future.delayed(const Duration(seconds: 2), () {
+    //   setItemData.value = List.generate(10, (index) => CheckBoxModel(index, true));
+    // });
+  },
 );
 
-final checkBoxSelector = Selector<List<String>>(
+final checkBoxSelector = Selector(
   key: 'check_box_selector',
   getValue: (getValue) => (getValue(checkBoxAtom).value as List<CheckBoxModel>)
       .where((e) => e.value)
