@@ -27,7 +27,7 @@ class RecoilStateStore<T> {
 
     if (atomOptions is Selector<T>) {
       return _EvaluatorResult<T>(
-        atomOptions.getValue((state) => getModelValue(state)),
+        atomOptions.getValue((state) => getModelValue(state).value),
         dependencies,
       );
     }

@@ -29,7 +29,7 @@ class Selector<T> extends RecoilOptions<T> {
   /// Get the current value of an [Atom].
   ///
   /// `getValue` returns a dynamic, so be sure to cast with the return type of the atom you're reading from.
-  GetRecoilValue<T> getValue;
+  GetRecoilValue<T, dynamic> getValue;
 
   /// Creates a [Selector], which represents a piece of readable state
   ///
