@@ -2,6 +2,6 @@
 
 Initial version of the library
 
-* feat: Atoms and Selectors implementation
-* feat: useRecoilState implementation
+* feat: Atom and useRecoilState implementation
+* feat: Selector and useRecoilSelectorState implementation
 
