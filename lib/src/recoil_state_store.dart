@@ -22,18 +22,21 @@ class RecoilStateStore<T> {
     return modelValue;
   }
 
-  _EvaluatorResult<T> evaluateResult(RecoilOptions<T> atomOptions) {
-    final dependencies = <String>[];
+  _EvaluatorResult<T> evaluateResult(RecoilOptions<T> recoilOptions) {
+    final dependencies = List<String>.empty(growable: true);
+    late Function(RecoilOptions) getRecoilState;
 
-    if (atomOptions is Selector<T>) {
-      return _EvaluatorResult<T>(
-        atomOptions.getValue((state) => getModelValue(state).value),
-        dependencies,
-      );
-    }
+    getRecoilState = (options) {
+      final result =
+          options is Selector ? options.getValue(getRecoilState) : getModelValue(options);
+      if (options is Atom) {
+        dependencies.add(options.key);
+      }
+      return result;
+    };
 
-    dependencies.add(atomOptions.key);
-    return _EvaluatorResult<T>(getModelValue(atomOptions), dependencies);
+    final currentValue = getRecoilState(recoilOptions);
+    return _EvaluatorResult(currentValue, dependencies);
   }
 }
 

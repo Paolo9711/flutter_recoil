@@ -75,7 +75,13 @@ class MyHomePage extends RecoilWidget {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const ResultScreen()),
+            MaterialPageRoute(
+              builder: (context) => ResultScreen(
+                onPressed: () {
+                  checkBox.setData(checkBox.data.map((e) => CheckBoxModel(e.id, false)).toList());
+                },
+              ),
+            ),
           );
         },
         child: const Icon(Icons.arrow_forward_ios_rounded),
@@ -85,13 +91,18 @@ class MyHomePage extends RecoilWidget {
 }
 
 class ResultScreen extends RecoilWidget {
-  const ResultScreen({Key? key}) : super(key: key);
+  final VoidCallback onPressed;
+  const ResultScreen({Key? key, required this.onPressed}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final checkBoxValue = useRecoilSelectorState(checkBoxSelector);
 
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: onPressed,
+        child: const Icon(Icons.file_upload),
+      ),
       appBar: AppBar(
         title: const Text('Check box result'),
       ),

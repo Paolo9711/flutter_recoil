@@ -7,7 +7,7 @@ class Atom<T> extends RecoilOptions<T> {
   /// `T` value represents `onItemSet` and it's called every time [Atom] value change
   ///
   /// `ValueNotifier<T>` represents `setItemData` useful to change value of current [Atom]
-  AtomEffect<T> effects;
+  List<AtomEffect<T>>? effects;
 
   T defaultValue;
 

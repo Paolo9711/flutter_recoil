@@ -19,7 +19,9 @@ class RecoilNotifier<T> {
     final currentResult = _stateStore.evaluateResult(_atom).evaluatorResult;
     currentResult.value = value;
 
-    if (_atom.effects != null) _atom.effects!(currentResult.value, currentResult);
+    if (_atom.effects != null) {
+      (_atom.effects!.forEach((effect) => effect(currentResult.value, currentResult)));
+    }
   }
 }
 
