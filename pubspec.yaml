@@ -1,7 +1,7 @@
 name: flutter_recoil
-description: A Flutter package that helps implement the Recoil pattern.
+description: A Flutter package that helps implement the Recoil pattern from React.
 version: 0.0.1
-homepage: https://github.com/IT-Management-MasterDegree/flutter_recoil.git
+homepage: https://github.com/Paolo9711/flutter_recoil
 
 environment:
   sdk: ">=2.14.0 <3.0.0"
