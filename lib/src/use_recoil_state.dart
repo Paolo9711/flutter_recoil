@@ -31,36 +31,7 @@ class RecoilNotifier<T> {
 /// See also:
 ///  * [Atom]
 ///  * [RecoilNotifier]
-RecoilNotifier<T> useRecoilState<T>(Atom<T> atom) {
-  final stateStore = RecoilStateStore.of(useContext());
-
-  final dependencies = useState(<String>[]);
-  final stateValue = RecoilNotifier<T>(atom.defaultValueNotifier, atom, stateStore);
-
-  final evaluateResult = useMemoized(
-    () => () {
-      final result = stateStore.evaluateResult(atom);
-      stateValue._valueNotifier.value = result.evaluatorResult.value;
-
-      dependencies.value = result.dependencies;
-    },
-    [dependencies],
-  );
-
-  final result = useMemoized<T>(() {
-    final result = stateStore.evaluateResult(atom);
-
-    result.dependencies.map((name) => stateStore.states[name]).forEach((element) {
-      element.addListener(evaluateResult);
-    });
-    dependencies.value = result.dependencies;
-    return result.evaluatorResult.value;
-  }, [dependencies]);
-
-  stateValue._valueNotifier = useState<T>(result);
-
-  return stateValue;
-}
+RecoilNotifier<T> useRecoilState<T>(Atom<T> atom) => _useRecoilState(atom);
 
 /// Returns the value of [Selector] and
 /// subscribes the components to future updates of that state.
@@ -68,16 +39,24 @@ RecoilNotifier<T> useRecoilState<T>(Atom<T> atom) {
 /// See also:
 ///  * [Selector]
 ///  * [RecoilOptions]
-T useRecoilSelectorState<T>(RecoilOptions<T> atomOptions) {
+T useRecoilSelectorState<T>(Selector<T> recoilOptions) => _useRecoilState(recoilOptions);
+
+dynamic _useRecoilState<T>(RecoilOptions<T> recoilOptions) {
   final stateStore = RecoilStateStore.of(useContext());
 
   final dependencies = useState(<String>[]);
-  late ValueNotifier<T> stateValue;
+
+  dynamic stateValue = recoilOptions is Atom<T>
+      ? RecoilNotifier<T>(recoilOptions.defaultValueNotifier, recoilOptions, stateStore)
+      : ValueNotifier<T>(stateStore.evaluateResult(recoilOptions).evaluatorResult);
 
   final evaluateResult = useMemoized(
     () => () {
-      final result = stateStore.evaluateResult(atomOptions);
-      stateValue.value = result.evaluatorResult;
+      final result = stateStore.evaluateResult(recoilOptions);
+
+      recoilOptions is Atom<T>
+          ? (stateValue as RecoilNotifier<T>)._valueNotifier.value = result.evaluatorResult.value
+          : (stateValue as ValueNotifier<T>).value = result.evaluatorResult;
 
       dependencies.value = result.dependencies;
     },
@@ -85,16 +64,18 @@ T useRecoilSelectorState<T>(RecoilOptions<T> atomOptions) {
   );
 
   final result = useMemoized<T>(() {
-    final result = stateStore.evaluateResult(atomOptions);
+    final result = stateStore.evaluateResult(recoilOptions);
 
     result.dependencies.map((name) => stateStore.states[name]).forEach((element) {
       element.addListener(evaluateResult);
     });
     dependencies.value = result.dependencies;
-    return result.evaluatorResult;
+    return recoilOptions is Selector<T> ? result.evaluatorResult : result.evaluatorResult.value;
   }, [dependencies]);
 
-  stateValue = useState<T>(result);
+  recoilOptions is Atom<T>
+      ? (stateValue as RecoilNotifier<T>)._valueNotifier = useState<T>(result)
+      : stateValue = useState<T>(result);
 
-  return stateValue.value;
+  return recoilOptions is Selector<T> ? stateValue.value : stateValue;
 }
