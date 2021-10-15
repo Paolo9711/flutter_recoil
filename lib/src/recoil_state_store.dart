@@ -11,12 +11,12 @@ class RecoilStateStore<T> {
   factory RecoilStateStore.of(BuildContext context) =>
       provider.Provider.of<RecoilStateStore<T>>(context);
 
-  getModelValue(RecoilOptions atomOptions) {
+  ValueNotifier<T> getModelValue(Atom<T> atomOptions) {
     if (states.containsKey(atomOptions.key)) {
       return states[atomOptions.key];
     }
 
-    final modelValue = atomOptions is Atom ? atomOptions.defaultValueNotifier : null;
+    final modelValue = atomOptions.defaultValueNotifier;
     states[atomOptions.key] = modelValue;
 
     return modelValue;
@@ -27,15 +27,17 @@ class RecoilStateStore<T> {
     late Function(RecoilOptions) getRecoilState;
 
     getRecoilState = (options) {
-      final result =
-          options is Selector ? options.getValue(getRecoilState) : getModelValue(options);
-      if (options is Atom) {
-        dependencies.add(options.key);
-      }
-      return result;
+      final result = options is Selector<T>
+          ? options.getValue(getRecoilState)
+          : getModelValue(options as Atom<T>);
+
+      if (options is Atom) dependencies.add(options.key);
+
+      return (recoilOptions is Selector && options is Atom) ? result.value : result;
     };
 
     final currentValue = getRecoilState(recoilOptions);
+
     return _EvaluatorResult(currentValue, dependencies);
   }
 }

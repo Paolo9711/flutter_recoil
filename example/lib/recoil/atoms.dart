@@ -27,7 +27,7 @@ final checkBoxAtom = Atom(
 final checkBoxSelector = Selector(
   key: 'check_box_selector',
   getValue: (getValue) {
-    final currentValue = getValue(checkBoxAtom).value as List<CheckBoxModel>;
+    final currentValue = getValue(checkBoxAtom) as List<CheckBoxModel>;
 
     return currentValue.where((e) => e.value).map((e) => e.id.toString()).toList();
   },
