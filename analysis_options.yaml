@@ -19,3 +19,4 @@ analyzer:
     dead_null_aware_expression: error
     unnecessary_null_comparison: error
     dead_code: error
+    invalid_use_of_protected_member: ignore

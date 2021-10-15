@@ -22,6 +22,7 @@ class Atom<T> extends RecoilOptions<T> {
     this.effects,
   }) : super(key: key);
 
+  @protected
   ValueNotifier<T> get defaultValueNotifier => ValueNotifier<T>(defaultValue);
 }
 
