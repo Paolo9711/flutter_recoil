@@ -1,6 +1,8 @@
 part of '../flutter_recoil.dart';
 
-/// Wrapping of HookWidget with custom RecoilWidget
+/// A [Widget] that can use [Atom] and [Selector].
+///
+/// It's usage is very similar to [StatelessWidget] and implements only a [build] method.
 abstract class RecoilWidget extends HookWidget {
   const RecoilWidget({Key? key}) : super(key: key);
 }

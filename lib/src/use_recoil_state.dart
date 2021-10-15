@@ -28,7 +28,7 @@ class RecoilNotifier<T> {
 /// Returns a custom [ValueNotifier] of an [Atom] and
 /// subscribes the components to future updates of that state.
 ///
-/// The return type of `useRecoilStata()` it's [RecoilNotifier] which provides parameters for reading and manipulating the state of an [Atom].
+/// The return type of `useRecoilState()` it's [RecoilNotifier] which provides parameters for reading and manipulating the state of an [Atom].
 /// * `data` can be used in order to get the value of the [Atom]
 /// * `setData` can be used to change the value of the [Atom]
 ///
