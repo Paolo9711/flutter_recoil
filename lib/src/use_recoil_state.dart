@@ -52,23 +52,20 @@ dynamic _useRecoilState<T>(RecoilOptions<T> recoilOptions) {
       ? RecoilNotifier<T>(recoilOptions.defaultValueNotifier, recoilOptions, stateStore)
       : ValueNotifier<T>(stateStore.evaluateResult(recoilOptions).evaluatorResult);
 
-  final evaluateResult = useMemoized(
-    () => () {
-      final result = stateStore.evaluateResult(recoilOptions);
+  final evaluateResult = useMemoized(() => () {
+        final result = stateStore.evaluateResult(recoilOptions);
 
-      recoilOptions is Atom<T>
-          ? (stateValue as RecoilNotifier<T>)._valueNotifier.value = result.evaluatorResult.value
-          : (stateValue as ValueNotifier<T>).value = result.evaluatorResult;
+        recoilOptions is Atom<T>
+            ? (stateValue as RecoilNotifier<T>)._valueNotifier.value = result.evaluatorResult.value
+            : (stateValue as ValueNotifier<T>).value = result.evaluatorResult;
 
-      enter.value =
-          result.dependencies.where((element) => !dependencies.value.contains(element)).toList();
-      leave.value =
-          dependencies.value.where((element) => !result.dependencies.contains(element)).toList();
+        enter.value =
+            result.dependencies.where((element) => !dependencies.value.contains(element)).toList();
+        leave.value =
+            dependencies.value.where((element) => !result.dependencies.contains(element)).toList();
 
-      dependencies.value = result.dependencies;
-    },
-    [dependencies],
-  );
+        dependencies.value = result.dependencies;
+      });
 
   useEffect(() {
     enter.value.map((name) => stateStore.states[name]).forEach((element) {
@@ -92,7 +89,7 @@ dynamic _useRecoilState<T>(RecoilOptions<T> recoilOptions) {
     });
     dependencies.value = result.dependencies;
     return recoilOptions is Selector<T> ? result.evaluatorResult : result.evaluatorResult.value;
-  }, [dependencies]);
+  });
 
   recoilOptions is Atom<T>
       ? (stateValue as RecoilNotifier<T>)._valueNotifier = useState<T>(result)
