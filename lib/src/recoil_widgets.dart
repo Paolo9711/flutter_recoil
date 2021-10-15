@@ -5,13 +5,27 @@ abstract class RecoilWidget extends HookWidget {
   const RecoilWidget({Key? key}) : super(key: key);
 }
 
-/// Wrapping of Provider with custom RecoilProvider using [RecoilStateStore]
 class RecoilProvider<T> extends StatelessWidget {
   final Widget? child;
   final provider.Dispose<T>? dispose;
   final bool? lazy;
   final TransitionBuilder? builder;
 
+  /// Provide a Recoil Context using [RecoilStateStore]
+  ///
+  /// Be sure to wrap widget that need Recoil Context, using builder method of [RecoilProvider]:
+  /// ```dart
+  /// @override
+  /// Widget build(BuildContext context) {
+  ///   return RecoilProvider(
+  ///     builder: (context, child) {
+  ///       return YourWidget(
+  ///       // Widget parameters
+  ///       );
+  ///     },
+  ///   );
+  /// }
+  /// ```
   const RecoilProvider({
     Key? key,
     this.child,

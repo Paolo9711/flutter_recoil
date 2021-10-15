@@ -12,13 +12,12 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return RecoilProvider(
       builder: (context, child) {
-        return MaterialApp(
+        return const MaterialApp(
           title: 'Flutter Recoil Demo',
-          home: child,
+          home: MyHomePage(),
           debugShowCheckedModeBanner: false,
         );
       },
-      child: const MyHomePage(),
     );
   }
 }

@@ -11,6 +11,14 @@ final initialCheckBox = List.generate(
 final checkBoxAtom = Atom(
   key: 'check_box_atom',
   defaultValue: initialCheckBox,
+  effects: [
+    (onItemSet, setItemData) {
+      // First Effect
+    },
+    (onItemSet, setItemData) {
+      // Second Effect
+    },
+  ],
 );
 
 final checkBoxSelector = Selector(
