@@ -20,7 +20,7 @@ class RecoilNotifier<T> {
     currentResult.value = value;
 
     if (_atom.effects != null) {
-      (_atom.effects!.forEach((effect) => effect(currentResult.value, currentResult)));
+      _atom.effects!.map((e) => e).forEach((effect) => effect(currentResult.value, currentResult));
     }
   }
 }
