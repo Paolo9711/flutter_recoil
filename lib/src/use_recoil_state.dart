@@ -20,7 +20,9 @@ class RecoilNotifier<T> {
     currentResult.value = value;
 
     if (_atom.effects != null) {
-      _atom.effects!.map((e) => e).forEach((effect) => effect(currentResult.value, currentResult));
+      _atom.effects!
+          .map((e) => e)
+          .forEach((effect) => effect(currentResult.value, currentResult));
     }
   }
 }
@@ -53,21 +55,26 @@ dynamic _useRecoilState<T>(RecoilOptions<T> recoilOptions) {
   final dependencies = useState(<String>[]);
 
   dynamic stateValue = recoilOptions is Atom<T>
-      ? RecoilNotifier<T>(recoilOptions.defaultValueNotifier, recoilOptions, stateStore)
-      : ValueNotifier<T>(stateStore.evaluateResult(recoilOptions).evaluatorResult);
+      ? RecoilNotifier<T>(
+          recoilOptions.defaultValueNotifier, recoilOptions, stateStore)
+      : ValueNotifier<T>(
+          stateStore.evaluateResult(recoilOptions).evaluatorResult);
 
   final evaluateResult = useMemoized(
     () => () {
       final result = stateStore.evaluateResult(recoilOptions);
 
       recoilOptions is Atom<T>
-          ? (stateValue as RecoilNotifier<T>)._valueNotifier.value = result.evaluatorResult.value
+          ? (stateValue as RecoilNotifier<T>)._valueNotifier.value =
+              result.evaluatorResult.value
           : (stateValue as ValueNotifier<T>).value = result.evaluatorResult;
 
-      enter.value =
-          result.dependencies.where((element) => !dependencies.value.contains(element)).toList();
-      leave.value =
-          dependencies.value.where((element) => !result.dependencies.contains(element)).toList();
+      enter.value = result.dependencies
+          .where((element) => !dependencies.value.contains(element))
+          .toList();
+      leave.value = dependencies.value
+          .where((element) => !result.dependencies.contains(element))
+          .toList();
 
       dependencies.value = result.dependencies;
     },
@@ -81,7 +88,9 @@ dynamic _useRecoilState<T>(RecoilOptions<T> recoilOptions) {
       if (element is Listenable) element.removeListener(evaluateResult);
     });
     return () {
-      dependencies.value.map((name) => stateStore.states[name]).forEach((element) {
+      dependencies.value
+          .map((name) => stateStore.states[name])
+          .forEach((element) {
         if (element is Listenable) element.removeListener(evaluateResult);
       });
     };
@@ -91,11 +100,15 @@ dynamic _useRecoilState<T>(RecoilOptions<T> recoilOptions) {
     () {
       final result = stateStore.evaluateResult(recoilOptions);
 
-      result.dependencies.map((name) => stateStore.states[name]).forEach((element) {
+      result.dependencies
+          .map((name) => stateStore.states[name])
+          .forEach((element) {
         element.addListener(evaluateResult);
       });
       dependencies.value = result.dependencies;
-      return recoilOptions is Selector<T> ? result.evaluatorResult : result.evaluatorResult.value;
+      return recoilOptions is Selector<T>
+          ? result.evaluatorResult
+          : result.evaluatorResult.value;
     },
   );
 
