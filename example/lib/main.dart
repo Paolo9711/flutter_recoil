@@ -37,15 +37,8 @@ class MyHomePage extends RecoilWidget {
   Widget build(BuildContext context) {
     final checkBox = useRecoilState(checkBoxAtom);
 
-    void onTileTap(int checkBoxID) {
-      checkBox.setData(
-        checkBox.data
-            .map(
-              (e) => e.id == checkBoxID ? CheckBoxModel(e.id, !e.value) : e,
-            )
-            .toList(),
-      );
-    }
+    void onTileTap(int checkBoxID) => checkBox.setData(
+        checkBox.data.map((e) => e.id == checkBoxID ? CheckBoxModel(e.id, !e.value) : e).toList());
 
     return Scaffold(
       appBar: AppBar(
@@ -60,6 +53,7 @@ class MyHomePage extends RecoilWidget {
           itemCount: initialCheckBox.length,
           itemBuilder: (context, index) {
             final currentCheckBox = checkBox.data[index];
+
             return ListTile(
               title: Text(currentCheckBox.id.toString()),
               trailing: Checkbox(
@@ -72,18 +66,16 @@ class MyHomePage extends RecoilWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ResultScreen(
-                onPressed: () {
-                  checkBox.setData(checkBox.data.map((e) => CheckBoxModel(e.id, false)).toList());
-                },
-              ),
+        onPressed: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ResultScreen(
+              onPressed: () {
+                checkBox.setData(checkBox.data.map((e) => CheckBoxModel(e.id, false)).toList());
+              },
             ),
-          );
-        },
+          ),
+        ),
         child: const Icon(Icons.arrow_forward_ios_rounded),
       ),
     );
@@ -101,7 +93,8 @@ class ResultScreen extends RecoilWidget {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
         onPressed: onPressed,
-        child: const Icon(Icons.file_upload),
+        child: const Icon(Icons.do_not_disturb_alt_rounded),
+        tooltip: "Disable all check box",
       ),
       appBar: AppBar(
         title: const Text('Check box result'),
