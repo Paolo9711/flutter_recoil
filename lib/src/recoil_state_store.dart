@@ -33,7 +33,9 @@ class RecoilStateStore<T> {
 
       if (options is Atom) dependencies.add(options.key);
 
-      return (recoilOptions is Selector && options is Atom) ? result.value : result;
+      return (recoilOptions is Selector && options is Atom)
+          ? (result as ValueNotifier<T>).value
+          : result;
     };
 
     final currentValue = getRecoilState(recoilOptions);
