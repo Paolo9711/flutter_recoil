@@ -1,5 +1,4 @@
-import 'package:flutter/foundation.dart';
-import '../flutter_recoil.dart';
+part of '../flutter_recoil.dart';
 
 typedef RecoilState<T> = T Function(RecoilOptions<T> atomOptions);
 typedef GetRecoilValue<T, H> = T Function(RecoilState<H> recoilState);

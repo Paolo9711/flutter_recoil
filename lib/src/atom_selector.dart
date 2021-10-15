@@ -1,5 +1,4 @@
-import 'package:flutter/foundation.dart';
-import 'package:flutter_recoil/src/types.dart';
+part of '../flutter_recoil.dart';
 
 class Atom<T> extends RecoilOptions<T> {
   /// Add custom actions to [Atom]

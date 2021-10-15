@@ -1,7 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:flutter_recoil/src/recoil_state_store.dart';
-import 'package:provider/provider.dart' as provider;
+part of '../flutter_recoil.dart';
 
 /// Wrapping of HookWidget with custom RecoilWidget
 abstract class RecoilWidget extends HookWidget {

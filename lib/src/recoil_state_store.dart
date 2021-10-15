@@ -1,6 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart' as provider;
-import '../flutter_recoil.dart';
+part of '../flutter_recoil.dart';
 
 /// Manage and evaluate values of atoms and selectors
 class RecoilStateStore<T> {
